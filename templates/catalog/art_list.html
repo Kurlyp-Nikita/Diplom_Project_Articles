@@ -1,0 +1,40 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    <link rel="stylesheet" href="{% static 'articles_list.css' %}">
+    <title>Статьи про искусство</title>
+{% endblock head %}
+
+{% block content %}
+<div class="container">
+    <div class="card-container">
+        {% for one in page_obj %}
+            <a href="{{ one.get_absolute_url }}">
+                <div class="card">
+                    <img src="{{ one.image }}" alt="{{ one.title }}" class="card-image">
+                    <div class="card-content">
+                        <h2>{{ one.title }}</h2>
+                        <p>{{ one.summary|truncatewords:3 }}</p>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Добавление пагинации -->
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Назад</a>
+        {% endif %}
+
+        <span class="current-page">{{ page_obj.number }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Вперед</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock content %}

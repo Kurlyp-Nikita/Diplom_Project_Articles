@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block head %}
+    <title>Регистрация</title>
+      <link rel="stylesheet" href="{% static 'home.css' %}">
+      <link rel="stylesheet" href="{% static 'login.css' %}">
+{% endblock head %}
+
+{% block content %}
+<h2>Регистрация</h2>
+<div class="reg">
+    <form method="post">
+        {% csrf_token %}  <!-- Добавление защитного токена CSRF -->
+        {{ form.as_p }}  <!-- Отображение формы в виде параграфов -->
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+</div>
+{% endblock %}
