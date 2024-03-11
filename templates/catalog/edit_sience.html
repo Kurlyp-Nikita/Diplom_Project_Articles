@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    <link rel="stylesheet" href="{% static 'add_art.css' %}">
+    <title>Изменить статтью</title>
+{% endblock head %}
+
+{% block content %}
+
+    {% if user.username %}
+          <h2>Изменить статью</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ forma }}
+            <input type="submit" value="Изменить статью">
+        </form>
+
+    {% else %}
+        <h1>Сначала авторизуйтесь</h1>
+    {% endif %}
+
+{% endblock content %}
+

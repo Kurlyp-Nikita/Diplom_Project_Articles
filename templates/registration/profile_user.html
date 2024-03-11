@@ -1,0 +1,84 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    <link rel="stylesheet" href="{% static 'profile_user.css' %}">
+    <title>Личный кабинет</title>
+{% endblock head %}
+
+{% block content %}
+    <h1>Информация о вас {{ user.username }}</h1>
+
+    {% if user.is_authenticated %}
+        <div class="sience">
+            <h2>Наука</h2>
+            {% if database_sience %}
+                <table class="info-table">
+                    <tr>
+                        <th>Тема</th>
+                        <th>Название</th>
+                        <th>Дата</th>
+                    </tr>
+                    {% for sience in database_sience %}
+                        <tr>
+                            <td>{{ sience.topic }}</td>
+                            <td>{{ sience.title }}</td>
+                            <td>{{ sience.data }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>Нет информации о науке</p>
+            {% endif %}
+        </div>
+
+        <div class="sport">
+            <h2>Спорт</h2>
+            {% if database_sport %}
+                <table class="info-table">
+                    <tr>
+                        <th>Тема</th>
+                        <th>Название</th>
+                        <th>Дата</th>
+                    </tr>
+                    {% for sport in database_sport %}
+                        <tr>
+                            <td>{{ sport.topic }}</td>
+                            <td>{{ sport.title }}</td>
+                            <td>{{ sport.data }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>Нет информации о спорте</p>
+            {% endif %}
+        </div>
+
+        <div class="art">
+            <h2>Искусство</h2>
+            {% if database_art %}
+                <table class="info-table">
+                    <tr>
+                        <th>Тема</th>
+                        <th>Название</th>
+                        <th>Дата</th>
+                    </tr>
+                    {% for art in database_art %}
+                        <tr>
+                            <td>{{ art.topic }}</td>
+                            <td>{{ art.title }}</td>
+                            <td>{{ art.data }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>Нет информации об искусстве</p>
+            {% endif %}
+            {% else %}
+            <p>Сначала авторизуйтесь</p>
+        </div>
+    {% endif %}
+
+{% endblock content %}
+
