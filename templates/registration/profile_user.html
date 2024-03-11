@@ -3,7 +3,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'home.css' %}">
-    <link rel="stylesheet" href="{% static 'profile_user.css' %}">
+    <link rel="stylesheet" href="{% static 'profile_users.css' %}">
     <title>Личный кабинет</title>
 {% endblock head %}
 
@@ -11,7 +11,7 @@
     <h1>Информация о вас {{ user.username }}</h1>
 
     {% if user.is_authenticated %}
-        <div class="sience">
+        <div class="scrollingDiv">
             <h2>Наука</h2>
             {% if database_sience %}
                 <table class="info-table">
@@ -33,7 +33,7 @@
             {% endif %}
         </div>
 
-        <div class="sport">
+        <div class="scrollingDiv">
             <h2>Спорт</h2>
             {% if database_sport %}
                 <table class="info-table">
@@ -55,7 +55,7 @@
             {% endif %}
         </div>
 
-        <div class="art">
+        <div class="scrollingDiv">
             <h2>Искусство</h2>
             {% if database_art %}
                 <table class="info-table">
