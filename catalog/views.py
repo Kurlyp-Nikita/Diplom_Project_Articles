@@ -45,6 +45,12 @@ class ArticleArtDetailView(DetailView):
     model = Art
 
 
+matcher = {
+    '1': (SienceForm, 'allsience'),
+    '2': (SportForm, 'allsport'),
+    '3': (ArtForm, 'allart')
+}
+
 # Функции добавления статей
 def addarticles(req):
     user = req.user  # используйте req.user для доступа к аутентифицированному пользователю
@@ -57,41 +63,21 @@ def addarticles(req):
         k6 = req.POST.get('info')
         k7 = req.user.username
         k8 = req.POST.get('image')
-
         print(k1, k2, k3, k4, k5, k6, k7, k8)
 
-        if k1 == '1':
-            science_form = SienceForm(req.POST)
-            if science_form.is_valid():
-                science = science_form.save(commit=False)
-                science.topic_id = k1
-                science.author = user
-                science.save()
-                return redirect('allsience')
-
-        elif k1 == '2':
-            sport_form = SportForm(req.POST)
-            if sport_form.is_valid():
-                sport = sport_form.save(commit=False)
-                sport.topic_id = k1
-                sport.author = user
-                sport.save()
-                return redirect('allsport')
-
-        elif k1 == '3':
-            art_form = ArtForm(req.POST)
-            if art_form.is_valid():
-                art = art_form.save(commit=False)
-                art.topic_id = k1
-                art.author = user
-                art.save()
-                return redirect('allart')
+        form = matcher[k1][0](req.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.topic_id = k1
+            model.author = user
+            model.save()
+            return redirect(matcher[k1][1])
 
     else:
         science_form = SienceForm(initial={'author': user})  # инициализируйте форму со значением автора
         sport_form = SportForm(initial={'author': user})
         art_form = ArtForm(initial={'author': user})
-        data = {'science_form': science_form, 'sport_form': sport_form, 'art_form': art_form}
+        data = {'form': science_form, 'sport_form': sport_form, 'art_form': art_form}
         return render(req, 'catalog/add_articles.html', data)
 
 
