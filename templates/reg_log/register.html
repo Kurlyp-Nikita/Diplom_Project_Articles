@@ -1,0 +1,82 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'login.css' %}">
+{% endblock %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="auth-form-container">
+  <div class="auth-form-title">Регистрация</div>
+  
+  <form method="post" class="auth-form register-form">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label for="id_username">Логин:</label>
+      <input type="text" name="username" id="id_username" class="form-control" required autocomplete="username" autofocus>
+      <i class="fas fa-user"></i>
+    </div>
+    
+    <div class="form-group">
+      <label for="id_email">Почта:</label>
+      <input type="email" name="email" id="id_email" class="form-control" required autocomplete="email">
+      <i class="fas fa-envelope"></i>
+    </div>
+    
+    <div class="form-group">
+      <label for="id_password1">Пароль:</label>
+      <input type="password" name="password1" id="id_password1" class="form-control" required autocomplete="new-password">
+      <i class="fas fa-lock"></i>
+    </div>
+    
+    <div class="form-group">
+      <label for="id_password2">Подтверждение:</label>
+      <input type="password" name="password2" id="id_password2" class="form-control" required autocomplete="new-password">
+      <i class="fas fa-shield-alt"></i>
+    </div>
+    
+    <div class="form-group">
+      <label for="id_first_name">Имя:</label>
+      <input type="text" name="first_name" id="id_first_name" class="form-control" required>
+      <i class="fas fa-id-card"></i>
+    </div>
+    
+    <div class="form-group">
+      <label for="id_last_name">Фамилия:</label>
+      <input type="text" name="last_name" id="id_last_name" class="form-control" required>
+      <i class="fas fa-id-card"></i>
+    </div>
+    
+    {% if form.errors %}
+    <div class="auth-error">
+      {% for field in form %}
+        {% for error in field.errors %}
+          <div class="error-item">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ field.label }}: {{ error }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+      
+      {% for error in form.non_field_errors %}
+        <div class="error-item">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ error }}
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <button type="submit" class="auth-submit-btn">
+      <i class="fas fa-user-plus"></i> Зарегистрироваться
+    </button>
+  </form>
+  
+  <div class="auth-links">
+    <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+  </div>
+</div>
+{% endblock %} 

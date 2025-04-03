@@ -1,0 +1,94 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'articles_lists.css' %}">
+{% endblock extra_css %}
+
+{% block title %}{{ topic_name }} - Статьи{% endblock %}
+
+{% block content %}
+<div class="articles-container">
+  <h1 class="articles-title">
+    {% if topic_name == "Наука" %}
+      <i class="fas fa-flask category-icon science"></i>
+    {% elif topic_name == "Спорт" %}
+      <i class="fas fa-futbol category-icon sport"></i>
+    {% elif topic_name == "Искусство" %}
+      <i class="fas fa-paint-brush category-icon art"></i>
+    {% endif %}
+    Статьи по теме: {{ topic_name }}
+  </h1>
+  
+  <div class="article-search-container">
+    <form method="get" action="{% url 'search_articles' %}" class="search-form">
+      <input type="text" name="query" placeholder="Поиск в категории {{ topic_name }}..." class="search-input">
+      <input type="hidden" name="topic" value="{{ topic_name }}">
+      <button type="submit" class="search-button">
+        <i class="fas fa-search"></i> Найти
+      </button>
+    </form>
+  </div>
+  
+  <div class="articles-grid">
+    {% for article in articles %}
+    <div class="article-card animate-on-scroll">
+      {% if article.image %}
+      <div class="article-image" style="background-image: url('{{ article.image }}')"></div>
+      {% else %}
+      <div class="article-image default-image"></div>
+      {% endif %}
+      
+      <div class="article-content">
+        <div class="category-badge {{ article.topic.name|lower }}">{{ article.topic.name }}</div>
+        <h3 class="article-title"><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></h3>
+        
+        {% if article.summary %}
+        <p class="article-summary">{{ article.summary|truncatechars:100 }}</p>
+        {% endif %}
+        
+        <div class="article-meta">
+          <span class="article-author"><i class="fas fa-user"></i> {{ article.author.username }}</span>
+          <span class="article-date"><i class="far fa-calendar-alt"></i> {{ article.data|date:"d.m.Y" }}</span>
+          <span class="article-views"><i class="far fa-eye"></i> {{ article.views }}</span>
+        </div>
+        
+        <a href="{% url 'article_detail' article.id %}" class="read-more">Читать далее <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="no-articles">
+      <i class="fas fa-exclamation-circle"></i>
+      <p>В категории {{ topic_name }} пока нет статей.</p>
+      <a href="{% url 'add_article' %}" class="btn-add-article">Создать первую статью</a>
+    </div>
+    {% endfor %}
+  </div>
+  
+  {% if page_obj.has_other_pages %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-item prev"><i class="fas fa-chevron-left"></i> Назад</a>
+    {% endif %}
+    
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+      <span class="pagination-item active">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+      <a href="?page={{ num }}" class="pagination-item">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="pagination-item next">Вперед <i class="fas fa-chevron-right"></i></a>
+    {% endif %}
+  </div>
+  {% endif %}
+  
+  <div class="back-to-categories">
+    <a href="{% url 'articles_list' %}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Все категории
+    </a>
+  </div>
+</div>
+{% endblock %} 

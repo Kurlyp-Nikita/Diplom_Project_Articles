@@ -1,0 +1,558 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: url('img/Статья-Фон.jpg');
+    /*linear-gradient(to bottom, #25ad7d, #46ce34)*/
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: Arial, sans-serif; /* добавляем шрифт для всего текста */
+}
+
+header {
+    background-color: #1f202c;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #f5efef;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+nav ul li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: #faf7f7;
+    text-decoration: none;
+    padding: 10px;
+}
+
+nav ul ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #f1f0eb;
+    padding: 0;
+    z-index: 1;
+}
+
+nav ul li:hover > ul {
+    display: block; /* изменяем значение на block */
+}
+
+nav ul ul li {
+    width: 200px;
+    display: block; /* изменяем значение на block */
+    position: relative;
+}
+
+nav ul ul ul li {
+    position: relative;
+    top: -60px;
+    left: 200px;
+}
+
+nav a:hover {
+    background-color: #871de1;
+}
+
+nav ul li ul li {
+    border-bottom: 1px solid #030303;
+    margin: 0; /* изменяем значения на 0 */
+    padding: 10px 15px;
+    background-color: #f1f0eb; /* меняем фон подменю */
+}
+
+nav ul ul li a {
+    color: #333;
+    padding: 10px;
+}
+
+nav ul ul li a:hover {
+    background-color: #89889b;
+}
+
+nav ul ul ul li {
+    position: relative;
+    top: -60px;
+    left: 200px;
+}
+
+.base {
+    margin: auto;
+    max-width: 800px; /* увеличиваем ширину */
+    padding: 30px; /* увеличиваем внутренний отступ */
+    background-color: #ffffff; /* изменяем цвет фона */
+    border-radius: 15px; /* увеличиваем радиус скругления углов */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* добавляем тень */
+}
+
+h2 {
+    color: #333;
+    font-size: 28px; /* увеличиваем размер шрифта */
+    margin-bottom: 20px; /* увеличиваем отступ снизу */
+}
+
+h1 {
+    color: #333;
+    font-size: 36px; /* увеличиваем размер шрифта */
+    margin-bottom: 30px; /* увеличиваем отступ снизу */
+}
+
+p {
+    color: #666;
+    font-size: 18px; /* увеличиваем размер шрифта */
+    line-height: 1.6; /* увеличиваем межстрочный интервал */
+}
+
+/* Улучшенный стиль для главной страницы */
+:root {
+  --hero-overlay: rgba(44, 62, 80, 0.7);
+  --card-hover-transform: translateY(-15px);
+  --card-hover-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Более яркий и заметный Hero-раздел */
+.hero {
+  position: relative;
+  height: 85vh;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: linear-gradient(rgba(44, 62, 80, 0.6), rgba(52, 152, 219, 0.7)), url('/static/img/Статья-Фон.jpg');
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 4rem;
+  color: white;
+  overflow: hidden;
+  border-radius: 0 0 30px 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.8) 0%, rgba(46, 204, 113, 0.8) 100%);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  max-width: 800px;
+  padding: 2rem;
+  z-index: 2;
+  animation: fadeIn 1.5s ease-out;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.hero p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Улучшенные стили для секций */
+section {
+  padding: 2rem 0;
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+  padding-bottom: 1rem;
+}
+
+.section-header h2 {
+  font-size: 2.2rem;
+  color: var(--dark-color);
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  width: 50%;
+  height: 3px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.section-header:hover h2::after {
+  width: 100%;
+}
+
+/* Улучшенные карточки статей */
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.article-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.article-card:hover {
+  transform: var(--card-hover-transform);
+  box-shadow: var(--card-hover-shadow);
+  border-color: rgba(52, 152, 219, 0.2);
+}
+
+.article-header {
+  position: relative;
+}
+
+.article-image {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  transition: all 0.5s ease;
+}
+
+.article-card:hover .article-image {
+  transform: scale(1.05);
+}
+
+.category-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.article-body {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.article-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.article-title a {
+  color: var(--dark-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.article-title a:hover {
+  color: var(--primary-color);
+}
+
+.article-summary {
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: auto;
+}
+
+.article-meta span {
+  display: flex;
+  align-items: center;
+}
+
+.article-meta i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+.article-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fafafa;
+}
+
+.read-more {
+  display: inline-block;
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  padding-right: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.read-more:after {
+  content: '→';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+}
+
+.read-more:hover {
+  color: var(--primary-dark);
+  padding-right: 1.8rem;
+}
+
+.read-more:hover:after {
+  right: -3px;
+}
+
+/* Улучшенные карточки категорий */
+.categories-section {
+  margin-top: 4rem;
+  padding-top: 2rem;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.category-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-card:hover {
+  transform: var(--card-hover-transform);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  transition: height 0.3s ease;
+}
+
+.category-card.science::before {
+  background-color: var(--science-color);
+}
+
+.category-card.sport::before {
+  background-color: var(--sport-color);
+}
+
+.category-card.art::before {
+  background-color: var(--art-color);
+}
+
+.category-card:hover::before {
+  height: 10px;
+}
+
+.category-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.science .category-icon {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: var(--science-color);
+}
+
+.sport .category-icon {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: var(--sport-color);
+}
+
+.art .category-icon {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--art-color);
+}
+
+.category-card:hover .category-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.category-icon i {
+  font-size: 2.5rem;
+}
+
+.category-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--dark-color);
+}
+
+.category-card p {
+  color: #666;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+/* Сообщение об отсутствии статей */
+.no-articles {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  border: 1px dashed #ddd;
+  color: #666;
+  margin: 2rem 0;
+  font-size: 1.1rem;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+  .hero {
+    height: 70vh;
+  }
+  
+  .hero h1 {
+    font-size: 2.8rem;
+  }
+  
+  .hero p {
+    font-size: 1.2rem;
+  }
+  
+  .articles-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: 60vh;
+  }
+  
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .section-header .view-all {
+    margin-top: 1rem;
+  }
+  
+  .articles-grid,
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    height: 50vh;
+  }
+  
+  .hero-content {
+    padding: 1.5rem;
+  }
+  
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+}

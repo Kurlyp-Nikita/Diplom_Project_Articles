@@ -1,0 +1,64 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block head %}
+  <title>Редактирование статьи</title>
+  <link rel="stylesheet" href="{% static 'art_add.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock head %}
+
+{% block content %}
+<div class="form-container">
+  <h1 class="form-title">Редактирование статьи</h1>
+  
+  {% if user.is_authenticated and user == article.author %}
+    <form method="post" class="article-form">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="{{ form.topic.id_for_label }}">Категория:</label>
+        {{ form.topic }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.title.id_for_label }}">Заголовок:</label>
+        {{ form.title }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.summary.id_for_label }}">Краткое описание:</label>
+        {{ form.summary }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.text.id_for_label }}">Текст статьи:</label>
+        {{ form.text }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.info.id_for_label }}">Источник (URL):</label>
+        {{ form.info }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.image.id_for_label }}">Изображение (URL):</label>
+        {{ form.image }}
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-save"></i> Сохранить изменения
+        </button>
+        <a href="{% url 'article_detail' article.id %}" class="cancel-btn">
+          <i class="fas fa-times"></i> Отмена
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="auth-required">
+      <p>У вас нет прав для редактирования этой статьи.</p>
+      <a href="{% url 'articles_list' %}" class="btn-back">Вернуться к списку статей</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %} 

@@ -2,17 +2,19 @@
 {% load static %}
 {% block head %}
     <title>Регистрация</title>
-      <link rel="stylesheet" href="{% static 'home.css' %}">
-      <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="{% static 'forms.css' %}">
 {% endblock head %}
 
 {% block content %}
-<h2>Регистрация</h2>
-<div class="reg">
-    <form method="post">
-        {% csrf_token %}  <!-- Добавление защитного токена CSRF -->
-        {{ form.as_p }}  <!-- Отображение формы в виде параграфов -->
+<div class="auth-form-container">
+    <h2 class="auth-form-title">Регистрация</h2>
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
         <button type="submit">Зарегистрироваться</button>
     </form>
+    <div class="auth-links">
+        <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+    </div>
 </div>
 {% endblock %}

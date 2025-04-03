@@ -1,0 +1,296 @@
+/* Современные стили для всех форм на сайте */
+:root {
+  --form-bg: white;
+  --input-bg: #f9f9f9;
+  --input-border: #e0e0e0;
+  --input-focus: #3498db;
+  --btn-primary: #3498db;
+  --btn-primary-hover: #2980b9;
+  --btn-success: #2ecc71;
+  --btn-success-hover: #27ae60;
+  --btn-danger: #e74c3c;
+  --btn-danger-hover: #c0392b;
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.08);
+  --radius: 8px;
+}
+
+/* Основные стили форм */
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--form-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.form-container:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+  position: relative;
+}
+
+.form-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background-color: var(--btn-primary);
+  transition: width 0.3s ease;
+}
+
+.form-container:hover .form-title::after {
+  width: 100px;
+}
+
+/* Стили для инпутов */
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+  transition: var(--transition);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  outline: none;
+}
+
+.form-group:focus-within label {
+  color: var(--input-focus);
+}
+
+/* Плавающие лейблы */
+.float-label {
+  position: relative;
+}
+
+.float-label label {
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  margin: 0;
+  padding: 0 0.25rem;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.float-label .form-control:focus ~ label,
+.float-label .form-control:not(:placeholder-shown) ~ label {
+  top: -0.5rem;
+  left: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--input-focus);
+  background-color: white;
+}
+
+/* Кнопки */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  transition: width 0.5s, height 0.5s;
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background-color: var(--btn-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-success {
+  background-color: var(--btn-success);
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: var(--btn-success-hover);
+}
+
+.btn-danger {
+  background-color: var(--btn-danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: var(--btn-danger-hover);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--input-border);
+  color: #555;
+}
+
+.btn-outline:hover {
+  background-color: #f5f5f5;
+}
+
+/* Стили для чекбоксов и радиокнопок */
+.checkbox-group, .radio-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"],
+.radio-group input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.checkbox-label, .radio-label {
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+}
+
+.checkbox-label::before,
+.radio-label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  transition: var(--transition);
+}
+
+.radio-label::before {
+  border-radius: 50%;
+}
+
+.checkbox-group input[type="checkbox"]:checked + .checkbox-label::before {
+  background-color: var(--btn-primary);
+  border-color: var(--btn-primary);
+}
+
+.checkbox-label::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 3px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.checkbox-group input[type="checkbox"]:checked + .checkbox-label::after {
+  opacity: 1;
+}
+
+.radio-group input[type="radio"]:checked + .radio-label::before {
+  border-color: var(--btn-primary);
+}
+
+.radio-label::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--btn-primary);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.radio-group input[type="radio"]:checked + .radio-label::after {
+  opacity: 1;
+}
+
+/* Валидация форм */
+.form-control.is-invalid {
+  border-color: var(--btn-danger);
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--btn-danger);
+}
+
+/* Отзывчивость */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1.5rem;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}

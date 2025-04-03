@@ -1,162 +1,214 @@
-from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView  # функция генерации чего-то
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import ListView, DetailView
 from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, JsonResponse
+from django.db.models import Q
 from catalog.forms import *
-from django.shortcuts import render, redirect
-from django.contrib.auth import logout
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
+@cache_page(60 * 15)  # Кеширование на 15 минут
 def index(req):
-    data = {}
+    # Получаем последние статьи для отображения на главной странице
+    latest_articles = Article.objects.all().order_by('-created_at')[:6]
+    popular_articles = Article.objects.all().order_by('-views')[:3]
+    
+    data = {
+        'latest_articles': latest_articles,
+        'popular_articles': popular_articles,
+    }
     return render(req, 'index.html', data)
 
 
-class ArticleSienceListView(ListView):
-    model = Sience
-    paginate_by = 3
+class ArticleListView(ListView):
+    model = Article
+    template_name = 'catalog/article_list.html'
+    paginate_by = 6
+    context_object_name = 'articles'
+    
+    @method_decorator(cache_page(60 * 5))  # Кеширование на 5 минут
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        topic_id = self.request.GET.get('topic')
+        query = self.request.GET.get('query')
+        
+        if topic_id:
+            queryset = queryset.filter(topic__name=topic_id)
+        
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) | 
+                Q(summary__icontains=query) |
+                Q(text__icontains=query)
+            )
+            
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_form'] = SearchForm(self.request.GET or None)
+        context['topic_filter'] = self.request.GET.get('topic', '')
+        return context
 
 
-class ArticleSienceDetailView(DetailView):
-    model = Sience
+class ArticleDetailView(DetailView):
+    model = Article
+    template_name = 'catalog/article_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        article = self.object
+        
+        # Увеличиваем счетчик просмотров
+        article.views += 1
+        article.save()
+        
+        # Проверяем, поставил ли текущий пользователь лайк
+        user_liked = False
+        if self.request.user.is_authenticated:
+            user_liked = article.likes.filter(user=self.request.user).exists()
+        
+        # Получаем оценку пользователя, если она есть
+        user_rating = None
+        if self.request.user.is_authenticated:
+            rating = article.ratings.filter(user=self.request.user).first()
+            if rating:
+                user_rating = rating.value
+        
+        # Получаем данные для диаграммы рейтингов
+        ratings_distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        if article.ratings.exists():
+            for rating in article.ratings.all():
+                ratings_distribution[rating.value] += 1
+        
+        # Формируем форму комментария
+        comment_form = CommentForm()
+        
+        # Связанные статьи (того же автора или той же категории)
+        related_articles = Article.objects.filter(
+            Q(author=article.author) | Q(topic=article.topic)
+        ).exclude(id=article.id).distinct()[:3]
+        
+        context.update({
+            'user_liked': user_liked,
+            'comment_form': comment_form,
+            'related_articles': related_articles,
+            'user_rating': user_rating,
+            'ratings_distribution': ratings_distribution,
+            'avg_rating': article.get_average_rating(),
+            'rating_count': article.get_rating_count(),
+        })
+        
+        return context
 
 
-class ArticleSportListView(ListView):
-    model = Sport
-    paginate_by = 3
-
-
-class ArticleSportDetailView(DetailView):
-    model = Sport
-
-
-class ArticleArtListView(ListView):
-    model = Art
-    paginate_by = 3
-
-
-class ArticleArtDetailView(DetailView):
-    model = Art
-
-
-matcher = {
-    '1': (SienceForm, 'allsience'),
-    '2': (SportForm, 'allsport'),
-    '3': (ArtForm, 'allart')
-}
-
-# Функции добавления статей
-def addarticles(req):
-    user = req.user  # используйте req.user для доступа к аутентифицированному пользователю
-    if req.POST:
-        k1 = req.POST.get('topic')
-        k2 = req.POST.get('title')
-        k3 = req.POST.get('summary')
-        k4 = req.POST.get('text')
-        k5 = req.POST.get('data')
-        k6 = req.POST.get('info')
-        k7 = req.user.username
-        k8 = req.POST.get('image')
-        print(k1, k2, k3, k4, k5, k6, k7, k8)
-
-        form = matcher[k1][0](req.POST)
+@login_required
+def add_article(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
         if form.is_valid():
-            model = form.save(commit=False)
-            model.topic_id = k1
-            model.author = user
-            model.save()
-            return redirect(matcher[k1][1])
-
+            article = form.save(commit=False)
+            article.author = request.user
+            article.save()
+            return redirect('article_detail', pk=article.pk)
     else:
-        science_form = SienceForm(initial={'author': user})  # инициализируйте форму со значением автора
-        sport_form = SportForm(initial={'author': user})
-        art_form = ArtForm(initial={'author': user})
-        data = {'form': science_form, 'sport_form': sport_form, 'art_form': art_form}
-        return render(req, 'catalog/add_articles.html', data)
+        form = ArticleForm()
+    
+    return render(request, 'catalog/add_article.html', {'form': form})
 
 
- # Функции удаления статей
-def delete_sience_articles(req, id):
-    one_sience = Sience.objects.get(id=id)
-    one_sience.delete()
-    return redirect('allsience')
-
-
-def delete_sport_articles(req, id):
-    one_sport = Sport.objects.get(id=id)
-    one_sport.delete()
-    return redirect('allsport')
-
-
-def delete_art_articles(req, id):
-    one_art = Art.objects.get(id=id)
-    one_art.delete()
-    return redirect('allart')
-
-
-# Функции изменения статей
-def edit_sience(req, id):
-    onesience = Sience.objects.get(id=id)
-
-    if onesience.author != req.user:
-        return HttpResponseForbidden("Вы не имеете права изменять эту статью")
-
-    forma = SienceForm(instance=onesience)
-
-    if req.POST:
-        form = SienceForm(req.POST, instance=onesience)
+@login_required
+def edit_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    
+    # Проверка, является ли пользователь автором статьи
+    if article.author != request.user:
+        return HttpResponseForbidden("Вы не имеете права редактировать эту статью")
+    
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article)
         if form.is_valid():
             form.save()
-            return redirect('allsience')
-
-    data = {'forma': forma}
-    return render(req, 'catalog/edit_sience.html', data)
-
-
-def edit_sport(req, id):
-    onesport = Sport.objects.get(id=id)
-
-    if onesport.author != req.user:
-        return HttpResponseForbidden("Вы не имеете права изменять эту статью")
-
-    forma = SportForm(instance=onesport)
-
-    if req.POST:
-        form = SportForm(req.POST, instance=onesport)
-        if form.is_valid():
-            form.save()
-            return redirect('allsport')
-
-    data = {'forma': forma}
-    return render(req, 'catalog/edit_sport.html', data)
+            return redirect('article_detail', pk=article.pk)
+    else:
+        form = ArticleForm(instance=article)
+    
+    return render(request, 'catalog/edit_article.html', {'form': form, 'article': article})
 
 
-def edit_art(req, id):
-    oneart = Art.objects.get(id=id)
+@login_required
+def delete_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    
+    # Проверка, является ли пользователь автором статьи
+    if article.author != request.user:
+        return HttpResponseForbidden("Вы не имеете права удалить эту статью")
+    
+    if request.method == 'POST':
+        article.delete()
+        return redirect('articles_list')
+    
+    return render(request, 'catalog/delete_article_confirm.html', {'article': article})
 
-    if oneart.author != req.user:
-        return HttpResponseForbidden("Вы не имеете права изменять эту статью")
 
-    forma = ArtForm(instance=oneart)
+@login_required
+@require_POST
+def add_comment(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    form = CommentForm(request.POST)
+    
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.article = article
+        comment.author = request.user
+        comment.save()
+    
+    return redirect('article_detail', pk=article.pk)
 
-    if req.POST:
-        form = ArtForm(req.POST, instance=oneart)
-        if form.is_valid():
-            form.save()
-            return redirect('allart')
 
-    data = {'forma': forma}
-    return render(req, 'catalog/edit_art.html', data)
+@login_required
+@require_POST
+def toggle_like(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    user = request.user
+    
+    # Проверяем, существует ли уже лайк
+    like_exists = Like.objects.filter(article=article, user=user).exists()
+    
+    if like_exists:
+        # Если лайк существует, удаляем его
+        Like.objects.filter(article=article, user=user).delete()
+        liked = False
+    else:
+        # Если лайка нет, создаем новый
+        Like.objects.create(article=article, user=user)
+        liked = True
+    
+    # Возвращаем количество лайков и статус лайка пользователя
+    likes_count = Like.objects.filter(article=article).count()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'likes_count': likes_count,
+            'liked': liked
+        })
+    else:
+        return redirect('article_detail', pk=article.pk)
 
 
 def reg(request):
-    if request.POST:  # Проверка на POST запрос
+    if request.method == 'POST':
         form = SignUp(request.POST)
         if form.is_valid():
             # Получение данных из формы
@@ -173,8 +225,8 @@ def reg(request):
             # Аутентификация пользователя
             authenticated_user = authenticate(username=username, password=password)
             if authenticated_user is not None:
-                # Перенаправление на главную страницу или другой URL
-                return redirect('login')
+                login(request, authenticated_user)
+                return redirect('home')
     else:
         form = SignUp()
 
@@ -183,7 +235,7 @@ def reg(request):
 
 
 def user_login(request):
-    if request.POST:
+    if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
@@ -191,7 +243,7 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Перенаправление на главную страницу после входа
+                return redirect('home')
     else:
         form = AuthenticationForm()
     return render(request, 'registration/login.html', {'form': form})
@@ -202,47 +254,110 @@ def user_logout(request):
     return redirect('home')
 
 
-def profile_user(req):
-    if req.user.is_authenticated:
-        sience = Sience.objects.filter(author=req.user)
-        sport = Sport.objects.filter(author=req.user)
-        art = Art.objects.filter(author=req.user)
-        forma_sience = SienceForm()
-        forma_sport = SportForm()
-        forma_art = ArtForm()
-        user = req.user
+@login_required
+def profile_user(request):
+    user = request.user
+    articles = Article.objects.filter(author=user).order_by('-created_at')
+    
+    # Статистика пользователя
+    total_articles = articles.count()
+    total_likes = Like.objects.filter(article__author=user).count()
+    total_comments = Comment.objects.filter(article__author=user).count()
+    total_views = sum(article.views for article in articles)
+    
+    data = {
+        'user': user,
+        'articles': articles,
+        'total_articles': total_articles,
+        'total_likes': total_likes,
+        'total_comments': total_comments,
+        'total_views': total_views,
+    }
+    
+    return render(request, 'registration/profile_user.html', data)
 
-        if req.POST:
-            if 'sience_form' in req.POST:
-                forma_sience = SienceForm(req.POST)
-                if forma_sience.is_valid():
-                    new_sience = forma_sience.save(commit=False)
-                    new_sience.author = req.user
-                    new_sience.save()
 
-            elif 'sport_form' in req.POST:
-                forma_sport = SportForm(req.POST)
-                if forma_sport.is_valid():
-                    new_sport = forma_sport.save(commit=False)
-                    new_sport.author = req.user
-                    new_sport.save()
+def search_articles(request):
+    form = SearchForm(request.GET)
+    articles = Article.objects.all()
+    
+    if form.is_valid():
+        query = form.cleaned_data.get('query')
+        topic = form.cleaned_data.get('topic')
+        
+        if query:
+            articles = articles.filter(
+                Q(title__icontains=query) | 
+                Q(summary__icontains=query) |
+                Q(text__icontains=query)
+            )
+        
+        if topic:
+            articles = articles.filter(topic=topic)
+    
+    paginator = Paginator(articles, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'catalog/search_results.html', {
+        'form': form,
+        'page_obj': page_obj,
+        'query': request.GET.get('query', ''),
+    })
 
-            elif 'art_form' in req.POST:
-                forma_art = ArtForm(req.POST)
-                if forma_art.is_valid():
-                    new_art = forma_art.save(commit=False)
-                    new_art.author = req.user
-                    new_art.save()
 
-        data = {
-            'database_sience': sience,
-            'forma_sience': forma_sience,
-            'database_sport': sport,
-            'forma_sport': forma_sport,
-            'database_art': art,
-            'forma_art': forma_art
-        }
-        return render(req, 'registration/profile_user.html', data)
-    else:
-        return HttpResponse('<h1>Сначала авторизуйтесь</h1>')
+@cache_page(60 * 5)  # Кеширование на 5 минут
+def articles_by_topic(request, topic_name):
+    """Функция для отображения статей по категориям с ЧПУ-ссылками"""
+    articles = Article.objects.filter(topic__name=topic_name)
+    
+    # Пагинация
+    paginator = Paginator(articles, 6)  # По 6 статей на страницу
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'articles': page_obj,
+        'topic_name': topic_name,
+        'page_obj': page_obj,
+    }
+    
+    return render(request, 'catalog/articles_by_topic.html', context)
+
+
+@login_required
+def rate_article(request, pk):
+    """Функция для оценки статьи"""
+    article = get_object_or_404(Article, pk=pk)
+    
+    if request.method == 'POST':
+        rating_value = int(request.POST.get('rating'))
+        
+        if 1 <= rating_value <= 5:  # Проверяем, что оценка в пределах от 1 до 5
+            # Проверяем, голосовал ли пользователь ранее
+            rating, created = Rating.objects.get_or_create(
+                article=article,
+                user=request.user,
+                defaults={'value': rating_value}
+            )
+            
+            # Если пользователь уже голосовал, обновляем значение
+            if not created:
+                rating.value = rating_value
+                rating.save()
+            
+            # Получаем новое среднее значение
+            avg_rating = article.get_average_rating()
+            rating_count = article.get_rating_count()
+            
+            # Если это AJAX запрос, возвращаем JSON с новыми данными
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'avg_rating': avg_rating,
+                    'rating_count': rating_count,
+                    'success': True
+                })
+    
+    # Перенаправляем на страницу статьи
+    return redirect('article_detail', pk=pk)
 

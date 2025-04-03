@@ -1,67 +1,147 @@
-<!doctype html>
 {% load static %}
-<html lang="en">
+{# {% load compress %} #}
+
+<!doctype html>
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
-    {% block head %}
-        <title>Главная Страница</title>
-        <link rel="stylesheet" href="{% static 'home.css' %}">
-    {% endblock head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ArticleHub{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    {# {% compress css %} #}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'forms.css' %}">
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    <link rel="stylesheet" href="{% static 'articles_lists.css' %}">
+    <link rel="stylesheet" href="{% static 'articles_details.css' %}">
+    <link rel="stylesheet" href="{% static 'add_art_1.css' %}">
+    <link rel="stylesheet" href="{% static 'prof_user.css' %}">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+    {% block extra_css %}{% endblock %}
+    {# {% endcompress %} #}
+    
+    {# {% compress js %} #}
+    <script src="{% static 'main.js' %}" defer></script>
+    {# {% endcompress %} #}
 </head>
 
 <body>
-
     <header>
-        <a href="{% url 'home' %}" class="logo">Наш сайт</a>
+        <div class="header-container container">
+            <a href="{% url 'home' %}" class="logo">
+                <i class="fas fa-newspaper"></i>
+                ArticleHub
+            </a>
 
-        <nav>
-            <ul>
-                <li><a href="#">Статьи &bigtriangledown;</a>
-                    <ul>
-                        <li><a href="{% url 'allsience' %}">Наука</a></li>
-                        <li><a href="{% url 'allsport' %}">Спорт</a></li>
-                        <li><a href="{% url 'allart' %}">Искусство</a></li>
-                    </ul>
-                </li>
-                <li><a href="{% url 'addarticles' %}">Добавить статью</a></li>
-                <li><a href="{% url 'profile' %}">Личный кабинет</a></li>
-                <li><a href="{% url 'reg' %}">Регистрация</a></li>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
 
-                {% if not user.is_authenticated %}
-                    <li><a href="{% url 'login' %}">Вход</a></li>
-                {% else %}
-                    <li><a href="{% url 'logout' %}?next={% url 'login' %}">Выход</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-
+            <nav>
+                <ul class="main-menu">
+                    <li><a href="{% url 'articles_list' %}"><i class="fas fa-book"></i> Все статьи</a></li>
+                    <li><a href="{% url 'articles_by_topic' 'Наука' %}" class="category-link science"><i class="fas fa-flask"></i> Наука</a></li>
+                    <li><a href="{% url 'articles_by_topic' 'Спорт' %}" class="category-link sport"><i class="fas fa-futbol"></i> Спорт</a></li>
+                    <li><a href="{% url 'articles_by_topic' 'Искусство' %}" class="category-link art"><i class="fas fa-paint-brush"></i> Искусство</a></li>
+                    <li><a href="{% url 'add_article' %}" class="add-article-btn"><i class="fas fa-plus-circle"></i> Добавить статью</a></li>
+                </ul>
+                
+                <div class="header-right">
+                    <form action="{% url 'search_articles' %}" method="get" class="header-search">
+                        <input type="text" name="q" placeholder="Поиск статей..." required>
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+                    
+                    <div class="auth-actions">
+                        {% if user.is_authenticated %}
+                            <div class="user-dropdown">
+                                <a href="#">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>{{ user.username }}</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'profile' %}" class="profile-link"><i class="fas fa-user"></i> Профиль</a></li>
+                                    <li><a href="{% url 'logout' %}" class="logout-link"><i class="fas fa-sign-out-alt"></i> Выход</a></li>
+                                </ul>
+                            </div>
+                        {% else %}
+                            <div class="auth-buttons">
+                                <a href="{% url 'login' %}" class="login-btn"><i class="fas fa-sign-in-alt"></i> Вход</a>
+                                <a href="{% url 'reg' %}" class="register-btn"><i class="fas fa-user-plus"></i> Регистрация</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+        </div>
     </header>
-{#    <img src="{% static 'img/Статья-Фон.jpg' %}" alt="Описание изображения">#}
 
-{% block content %}
-        <div class="base">
-        {% if user.username %}
-            <div>
-                <h2>Добро пожаловать на сайт {{ user.username }}</h2>
-                <p>Теперь вам доступно добавление, изменения и удаление своих статей!</p>
-            </div>
-        {% else %}
-            <div class="dog">
-                <h1>Добро пожаловать!</h1>
-                <p>
-                    Здесь, в нашем уютном уголке интернета, мы предлагаем уникальную возможность исследовать мир слова и делиться своими мыслями и идеями с миллионами людей по всему миру.
-                    Здесь каждый может найти что-то для своей души - погрузиться в фантастические миры или познать новые знания, запечатлеть важные моменты своей жизни или поделиться своими историями с другими.
-                    Яркое и вдохновляющее путешествие начинается с регистрации на нашей платформе.
-                    Зарегистрировавшись, вы открываете для себя мир возможностей, где каждая ваша статья сохраняется и остается только вашей собственностью.
-                    Здесь вы сможете свободно изменять и удалять свои публикации в удобное для вас время, создавая идеальное пространство для самовыражения.
-                    А если вы еще не зарегистрированы, не тревожьтесь! У вас тоже есть шанс присоединиться к нашему сообществу.
-                    Просто нажмите на кнопку "Регистрация" и вас ждет уникальная возможность воплотить свои мысли в слова и делиться ими со всем миром. Разверните свои крылья и откройте себе новые горизонты!
-                </p>
-            </div>
-        {% endif %}
-    </div>
-{% endblock content %}
+    <main>
+        <div class="container">
+            {% block content %}
+                <section class="hero">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Добро пожаловать в мир статей</h1>
+                        <p class="hero-text">Исследуйте новые идеи, делитесь знаниями и присоединяйтесь к нашему сообществу авторов</p>
+                        <div class="hero-actions">
+                            <a href="{% url 'articles_list' %}" class="btn btn-primary">Смотреть статьи</a>
+                            <a href="{% url 'add_article' %}" class="btn btn-secondary">Написать статью</a>
+                        </div>
+                    </div>
+                </section>
+            {% endblock %}
+        </div>
+    </main>
 
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <a href="{% url 'home' %}">
+                        <i class="fas fa-newspaper"></i>
+                        ArticleHub
+                    </a>
+                    <p>Платформа для обмена знаниями и идеями</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Быстрые ссылки</h3>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Главная</a></li>
+                        <li><a href="{% url 'articles_list' %}">Статьи</a></li>
+                        <li><a href="{% url 'add_article' %}">Написать статью</a></li>
+                    </ul>
+                </div>
+                <div class="footer-categories">
+                    <h3>Категории</h3>
+                    <ul>
+                        <li><a href="{% url 'articles_list' %}?topic=Наука">Наука</a></li>
+                        <li><a href="{% url 'articles_list' %}?topic=Спорт">Спорт</a></li>
+                        <li><a href="{% url 'articles_list' %}?topic=Искусство">Искусство</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h3>Присоединяйтесь к нам</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 ArticleHub. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Оставляю пустой скрипт для возможности добавления встроенного JavaScript в будущем
+    </script>
 </body>
 </html>

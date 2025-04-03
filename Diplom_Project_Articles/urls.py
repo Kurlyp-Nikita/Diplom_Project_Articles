@@ -17,28 +17,37 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from catalog import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='home'),
-    path('addarticles/', views.addarticles, name='addarticles'),
-    path('edit_sience/<int:id>/', views.edit_sience, name='edit_sience'),
-    path('edit_sport/<int:id>/', views.edit_sport, name='edit_sport'),
-    path('edit_art/<int:id>/', views.edit_art, name='edit_art'),
-
-    path('delete_sience_articles/<int:id>/', views.delete_sience_articles, name='delete_sience'),
-    path('delete_sport_articles/<int:id>/', views.delete_sport_articles, name='delete_sport'),
-    path('delete_art_articles/<int:id>/', views.delete_art_articles, name='delete_art'),
-
-    path('sience_articles/all/', views.ArticleSienceListView.as_view(), name='allsience'),
-    path('info_sience_aerticles/<int:pk>/', views.ArticleSienceDetailView.as_view(), name='info_sience'),
-    path('sport_articles/all/', views.ArticleSportListView.as_view(), name='allsport'),
-    path('info_sport_aerticles/<int:pk>/', views.ArticleSportDetailView.as_view(), name='info_sport'),
-    path('art_articles/all/', views.ArticleArtListView.as_view(), name='allart'),
-    path('info_art_aerticles/<int:pk>/', views.ArticleArtDetailView.as_view(), name='info_art'),
-
+    
+    # Статьи
+    path('articles/', views.ArticleListView.as_view(), name='articles_list'),
+    path('articles/<int:pk>/', views.ArticleDetailView.as_view(), name='article_detail'),
+    path('articles/add/', views.add_article, name='add_article'),
+    path('articles/<int:pk>/edit/', views.edit_article, name='edit_article'),
+    path('articles/<int:pk>/delete/', views.delete_article, name='delete_article'),
+    path('articles/category/<str:topic_name>/', views.articles_by_topic, name='articles_by_topic'),
+    
+    # Комментарии и лайки
+    path('articles/<int:pk>/add_comment/', views.add_comment, name='add_comment'),
+    path('articles/<int:pk>/toggle_like/', views.toggle_like, name='toggle_like'),
+    path('articles/<int:pk>/rate/', views.rate_article, name='rate_article'),
+    
+    # Поиск
+    path('search/', views.search_articles, name='search_articles'),
+    
+    # Аутентификация
     path('registration/', views.reg, name='reg'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
     path('profile/', views.profile_user, name='profile'),
 ]
+
+# Добавляем обработку статических файлов в режиме разработки
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

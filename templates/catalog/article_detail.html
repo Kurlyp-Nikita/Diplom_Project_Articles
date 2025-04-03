@@ -1,0 +1,386 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'articles_details.css' %}">
+{% endblock extra_css %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="article-container">
+  <div class="article-header">
+    <div class="category-badge {{ article.topic.name|lower }}" style="position: relative; margin-bottom: 1rem;">{{ article.topic.name }}</div>
+    <h1 class="article-title">{{ article.title }}</h1>
+    <div class="article-meta">
+      <span class="article-author">
+        <i class="fas fa-user"></i> {{ article.author.username }}
+      </span>
+      <span class="article-date">
+        <i class="far fa-calendar-alt"></i> {{ article.data|date:"d.m.Y" }}
+      </span>
+      <span class="article-views">
+        <i class="far fa-eye"></i> {{ article.views }}
+      </span>
+      <span class="article-likes">
+        <i class="far fa-heart"></i> <span id="likes-count">{{ article.likes.count }}</span>
+      </span>
+      <span class="article-comments">
+        <i class="far fa-comment"></i> {{ article.comments.count }}
+      </span>
+      <span class="article-rating">
+        <i class="fas fa-star"></i> <span id="avg-rating">{{ avg_rating|floatformat:1 }}</span>
+      </span>
+    </div>
+  </div>
+  
+  {% if article.image %}
+  <div class="article-image-container">
+    <img src="{{ article.image.url }}" alt="{{ article.title }}" class="article-image">
+  </div>
+  {% endif %}
+  
+  <div class="article-summary">
+    <p><strong>{{ article.summary }}</strong></p>
+  </div>
+  
+  <div class="article-content">
+    {{ article.text|linebreaks }}
+  </div>
+  
+  <!-- Система рейтинга -->
+  <div class="rating-system animate-on-scroll">
+    <div class="rating-title">Оценка статьи</div>
+    
+    <div class="avg-rating">
+      <div class="avg-rating-value">{{ avg_rating|floatformat:1 }}</div>
+      <div class="avg-rating-stars">
+        {% if avg_rating >= 4.75 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+        {% elif avg_rating >= 4.25 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+        {% elif avg_rating >= 3.75 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+        {% elif avg_rating >= 3.25 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+          <i class="far fa-star"></i>
+        {% elif avg_rating >= 2.75 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+        {% elif avg_rating >= 2.25 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+        {% elif avg_rating >= 1.75 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+        {% elif avg_rating >= 1.25 %}
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+        {% elif avg_rating >= 0.75 %}
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+        {% elif avg_rating >= 0.25 %}
+          <i class="fas fa-star-half-alt"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+        {% else %}
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="rating-count">На основе {{ rating_count }} оценок</div>
+    
+    <div class="rating-distribution">
+      <div class="progress-bar" style="--percent: {{ ratings_distribution.5|default:0|stringformat:'i' }}%">
+        <span>5 звезд</span>
+        <div class="progress">
+          <div class="fill"></div>
+        </div>
+        <span>{{ ratings_distribution.5|default:0 }}</span>
+      </div>
+      <div class="progress-bar" style="--percent: {{ ratings_distribution.4|default:0|stringformat:'i' }}%">
+        <span>4 звезды</span>
+        <div class="progress">
+          <div class="fill"></div>
+        </div>
+        <span>{{ ratings_distribution.4|default:0 }}</span>
+      </div>
+      <div class="progress-bar" style="--percent: {{ ratings_distribution.3|default:0|stringformat:'i' }}%">
+        <span>3 звезды</span>
+        <div class="progress">
+          <div class="fill"></div>
+        </div>
+        <span>{{ ratings_distribution.3|default:0 }}</span>
+      </div>
+      <div class="progress-bar" style="--percent: {{ ratings_distribution.2|default:0|stringformat:'i' }}%">
+        <span>2 звезды</span>
+        <div class="progress">
+          <div class="fill"></div>
+        </div>
+        <span>{{ ratings_distribution.2|default:0 }}</span>
+      </div>
+      <div class="progress-bar" style="--percent: {{ ratings_distribution.1|default:0|stringformat:'i' }}%">
+        <span>1 звезда</span>
+        <div class="progress">
+          <div class="fill"></div>
+        </div>
+        <span>{{ ratings_distribution.1|default:0 }}</span>
+      </div>
+    </div>
+    
+    <div class="user-rating">
+      {% if user.is_authenticated %}
+      <div class="rate-this">Оцените эту статью:</div>
+      <form id="rating-form" action="{% url 'rate_article' article.id %}" method="post">
+        {% csrf_token %}
+        <div class="stars">
+          <input type="radio" id="star5" name="rating" value="5" {% if user_rating == 5 %}checked{% endif %} />
+          <label for="star5" title="Отлично"></label>
+          <input type="radio" id="star4" name="rating" value="4" {% if user_rating == 4 %}checked{% endif %} />
+          <label for="star4" title="Хорошо"></label>
+          <input type="radio" id="star3" name="rating" value="3" {% if user_rating == 3 %}checked{% endif %} />
+          <label for="star3" title="Нормально"></label>
+          <input type="radio" id="star2" name="rating" value="2" {% if user_rating == 2 %}checked{% endif %} />
+          <label for="star2" title="Плохо"></label>
+          <input type="radio" id="star1" name="rating" value="1" {% if user_rating == 1 %}checked{% endif %} />
+          <label for="star1" title="Ужасно"></label>
+        </div>
+      </form>
+      <div class="thank-message">Спасибо за вашу оценку!</div>
+      {% else %}
+      <div class="login-to-rate">
+        <a href="{% url 'login' %}">Войдите</a>, чтобы оценить эту статью
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  {% if article.info %}
+  <div class="article-source">
+    <p>Источник: <a href="{{ article.info }}" target="_blank" rel="noopener noreferrer">{{ article.info }}</a></p>
+  </div>
+  {% endif %}
+  
+  <div class="article-actions">
+    <form action="{% url 'toggle_like' article.id %}" method="post" id="like-form">
+      {% csrf_token %}
+      <button type="submit" class="like-button {% if user_liked %}liked{% endif %}">
+        <i class="{% if user_liked %}fas{% else %}far{% endif %} fa-heart"></i> Нравится
+      </button>
+    </form>
+    
+    {% if user.is_authenticated and user == article.author %}
+    <div class="author-actions">
+      <a href="{% url 'edit_article' article.id %}" class="edit-button">
+        <i class="fas fa-edit"></i> Редактировать
+      </a>
+      <a href="{% url 'delete_article' article.id %}" class="delete-button">
+        <i class="fas fa-trash"></i> Удалить
+      </a>
+    </div>
+    {% endif %}
+  </div>
+  
+  <!-- Раздел комментариев -->
+  <div class="comments-section">
+    <h3>Комментарии ({{ article.comments.count }})</h3>
+    
+    {% if user.is_authenticated %}
+    <div class="comment-form-container">
+      <form action="{% url 'add_comment' article.id %}" method="post" class="comment-form">
+        {% csrf_token %}
+        {{ comment_form.text }}
+        <button type="submit" class="submit-comment">
+          <i class="fas fa-paper-plane"></i> Отправить
+        </button>
+      </form>
+    </div>
+    {% else %}
+    <p class="login-to-comment">
+      <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Войдите</a>, чтобы оставить комментарий
+    </p>
+    {% endif %}
+    
+    <div class="comments-list">
+      {% for comment in article.comments.all %}
+      <div class="comment animate-on-scroll">
+        <div class="comment-header">
+          <span class="comment-author">{{ comment.author.username }}</span>
+          <span class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+        </div>
+        <div class="comment-body">
+          {{ comment.text|linebreaks }}
+        </div>
+      </div>
+      {% empty %}
+      <p class="no-comments">Пока нет комментариев. Будьте первым!</p>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <!-- Связанные статьи -->
+  {% if related_articles %}
+  <div class="related-articles">
+    <h3>Похожие статьи</h3>
+    <div class="related-articles-grid">
+      {% for related in related_articles %}
+      <div class="related-article-card animate-on-scroll">
+        {% if related.image %}
+        <div class="related-article-image" style="background-image: url('{{ related.image }}')"></div>
+        {% else %}
+        <div class="related-article-image default-image"></div>
+        {% endif %}
+        <div class="related-article-info">
+          <h4><a href="{% url 'article_detail' related.id %}">{{ related.title }}</a></h4>
+          <span class="related-article-date">{{ related.data|date:"d.m.Y" }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  // AJAX для лайков без перезагрузки страницы
+  document.addEventListener('DOMContentLoaded', function() {
+    const likeForm = document.getElementById('like-form');
+    const likeButton = document.querySelector('.like-button');
+    const likesCount = document.getElementById('likes-count');
+    
+    if (likeForm) {
+      likeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(likeForm);
+        
+        fetch(likeForm.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+          likesCount.textContent = data.likes_count;
+          
+          if (data.liked) {
+            likeButton.classList.add('liked');
+            likeButton.querySelector('i').classList.replace('far', 'fas');
+          } else {
+            likeButton.classList.remove('liked');
+            likeButton.querySelector('i').classList.replace('fas', 'far');
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      });
+    }
+    
+    // Система рейтинга с звездами
+    const ratingInputs = document.querySelectorAll('.stars input');
+    const thankMessage = document.querySelector('.thank-message');
+    const ratingForm = document.getElementById('rating-form');
+    
+    ratingInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        // Отправляем AJAX запрос с оценкой
+        const formData = new FormData(ratingForm);
+        
+        fetch(ratingForm.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Показываем сообщение
+          thankMessage.style.display = 'block';
+          
+          // Анимируем звезды
+          const stars = document.querySelectorAll('.stars label');
+          stars.forEach((star, index) => {
+            setTimeout(() => {
+              star.style.animation = 'star-pulse 0.3s ease';
+              setTimeout(() => {
+                star.style.animation = '';
+              }, 300);
+            }, index * 100);
+          });
+          
+          // Обновляем средний рейтинг и счетчик
+          const avgRating = document.querySelector('.avg-rating-value');
+          avgRating.textContent = data.avg_rating.toFixed(1);
+          
+          const ratingCount = document.querySelector('.rating-count');
+          ratingCount.textContent = `На основе ${data.rating_count} оценок`;
+          
+          // Обновляем заголовок
+          document.getElementById('avg-rating').textContent = data.avg_rating.toFixed(1);
+          
+          // Обновляем полосы распределения рейтинга (в будущем)
+        })
+        .catch(error => console.error('Error:', error));
+      });
+    });
+    
+    // Инициализация анимаций
+    const animateElements = document.querySelectorAll('.animate-on-scroll');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
+    
+    animateElements.forEach(element => {
+      observer.observe(element);
+    });
+  });
+</script>
+{% endblock content %} 

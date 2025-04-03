@@ -1,0 +1,122 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block head %}
+  <title>Удаление статьи</title>
+  <link rel="stylesheet" href="{% static 'articles_details.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .delete-container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .delete-warning {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #fff8e1;
+      border-left: 4px solid #ffc107;
+      border-radius: 4px;
+    }
+    
+    .delete-warning h2 {
+      color: #e65100;
+      margin-top: 0;
+    }
+    
+    .article-info {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+    }
+    
+    .article-info h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    
+    .delete-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    
+    .confirm-delete {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .confirm-delete:hover {
+      background-color: #d32f2f;
+    }
+    
+    .cancel-delete {
+      background-color: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .cancel-delete:hover {
+      background-color: #bdbdbd;
+    }
+  </style>
+{% endblock head %}
+
+{% block content %}
+<div class="delete-container">
+  {% if user.is_authenticated and user == article.author %}
+    <div class="delete-warning">
+      <h2><i class="fas fa-exclamation-triangle"></i> Подтверждение удаления</h2>
+      <p>Вы уверены, что хотите удалить эту статью? Это действие невозможно отменить.</p>
+    </div>
+    
+    <div class="article-info">
+      <h3>{{ article.title }}</h3>
+      <p><strong>Категория:</strong> {{ article.topic.name }}</p>
+      <p><strong>Дата создания:</strong> {{ article.data|date:"d.m.Y" }}</p>
+      {% if article.summary %}
+        <p><strong>Краткое описание:</strong> {{ article.summary }}</p>
+      {% endif %}
+    </div>
+    
+    <form method="post">
+      {% csrf_token %}
+      <div class="delete-actions">
+        <button type="submit" class="confirm-delete">
+          <i class="fas fa-trash"></i> Удалить
+        </button>
+        <a href="{% url 'article_detail' article.id %}" class="cancel-delete">
+          <i class="fas fa-times"></i> Отмена
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="auth-required">
+      <p>У вас нет прав для удаления этой статьи.</p>
+      <a href="{% url 'articles_list' %}" class="btn-back">Вернуться к списку статей</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %} 

@@ -1,84 +1,130 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'home.css' %}">
-    <link rel="stylesheet" href="{% static 'prof_user.css' %}">
-    <title>Личный кабинет</title>
+  <title>Личный кабинет</title>
+  <link rel="stylesheet" href="{% static 'prof_user.css' %}">
 {% endblock head %}
 
 {% block content %}
-    <h1>Информация о вас {{ user.username }}</h1>
-
-    {% if user.is_authenticated %}
-        <div class="scrollingDiv">
-            <h2>Наука</h2>
-            {% if database_sience %}
-                <table class="info-table">
-                    <tr>
-                        <th>Тема</th>
-                        <th>Название</th>
-                        <th>Дата</th>
-                    </tr>
-                    {% for sience in database_sience %}
-                        <tr>
-                            <td>{{ sience.topic }}</td>
-                            <td>{{ sience.title }}</td>
-                            <td>{{ sience.data }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p>Нет информации о науке</p>
-            {% endif %}
+<div class="profile-container">
+  <!-- Боковая панель с информацией о пользователе -->
+  <div class="profile-sidebar">
+    <div class="profile-avatar">
+      <i class="fas fa-user"></i>
+    </div>
+    
+    <div class="profile-name">
+      <h2>{{ user.username }}</h2>
+      <p>
+        {% if user.first_name or user.last_name %}
+          {{ user.first_name }} {{ user.last_name }}
+        {% else %}
+          Пользователь
+        {% endif %}
+      </p>
+    </div>
+    
+    <div class="profile-stats">
+      <div class="stat-item">
+        <div class="stat-icon">
+          <i class="fas fa-newspaper"></i>
         </div>
-
-        <div class="scrollingDiv">
-            <h2>Спорт</h2>
-            {% if database_sport %}
-                <table class="info-table">
-                    <tr>
-                        <th>Тема</th>
-                        <th>Название</th>
-                        <th>Дата</th>
-                    </tr>
-                    {% for sport in database_sport %}
-                        <tr>
-                            <td>{{ sport.topic }}</td>
-                            <td>{{ sport.title }}</td>
-                            <td>{{ sport.data }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p>Нет информации о спорте</p>
-            {% endif %}
+        <div class="stat-info">
+          <h3>Статей:</h3>
+          <p>{{ total_articles }}</p>
         </div>
-
-        <div class="scrollingDiv">
-            <h2>Искусство</h2>
-            {% if database_art %}
-                <table class="info-table">
-                    <tr>
-                        <th>Тема</th>
-                        <th>Название</th>
-                        <th>Дата</th>
-                    </tr>
-                    {% for art in database_art %}
-                        <tr>
-                            <td>{{ art.topic }}</td>
-                            <td>{{ art.title }}</td>
-                            <td>{{ art.data }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p>Нет информации об искусстве</p>
-            {% endif %}
-            {% else %}
-            <p>Сначала авторизуйтесь</p>
+      </div>
+      
+      <div class="stat-item">
+        <div class="stat-icon">
+          <i class="fas fa-heart"></i>
         </div>
+        <div class="stat-info">
+          <h3>Лайков:</h3>
+          <p>{{ total_likes }}</p>
+        </div>
+      </div>
+      
+      <div class="stat-item">
+        <div class="stat-icon">
+          <i class="fas fa-comment"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Комментариев:</h3>
+          <p>{{ total_comments }}</p>
+        </div>
+      </div>
+      
+      <div class="stat-item">
+        <div class="stat-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Просмотров:</h3>
+          <p>{{ total_views }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Основной контент профиля -->
+  <div class="profile-content">
+    <div class="content-header">
+      <h2>Мои статьи</h2>
+      <a href="{% url 'add_article' %}" class="btn-add-article">
+        <i class="fas fa-plus"></i> Добавить статью
+      </a>
+    </div>
+    
+    {% if articles %}
+    <div class="articles-list">
+      {% for article in articles %}
+      <div class="article-card">
+        <div class="article-header">
+          <div class="category-badge {{ article.topic.name|slugify }}">{{ article.topic.name }}</div>
+          {% if article.image %}
+          <div class="article-image" style="background-image: url('{{ article.image }}')"></div>
+          {% else %}
+          <div class="article-image default-image"></div>
+          {% endif %}
+        </div>
+        
+        <div class="article-body">
+          <h3 class="article-title">
+            <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+          </h3>
+          
+          <div class="article-meta">
+            <span><i class="far fa-calendar-alt"></i> {{ article.data|date:"d.m.Y" }}</span>
+            <span><i class="far fa-eye"></i> {{ article.views }}</span>
+            <span><i class="far fa-heart"></i> {{ article.likes.count }}</span>
+            <span><i class="far fa-comment"></i> {{ article.comments.count }}</span>
+          </div>
+        </div>
+        
+        <div class="article-footer">
+          <div class="article-actions">
+            <a href="{% url 'edit_article' article.id %}" class="btn-edit">
+              <i class="fas fa-edit"></i> Редактировать
+            </a>
+            <a href="{% url 'delete_article' article.id %}" class="btn-delete">
+              <i class="fas fa-trash"></i> Удалить
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-articles">
+      <p>У вас пока нет статей. Создайте свою первую статью!</p>
+      <a href="{% url 'add_article' %}" class="btn-add-article">
+        <i class="fas fa-plus"></i> Добавить статью
+      </a>
+    </div>
     {% endif %}
-
+  </div>
+</div>
 {% endblock content %}
 

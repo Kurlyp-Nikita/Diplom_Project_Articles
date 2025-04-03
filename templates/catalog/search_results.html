@@ -1,0 +1,99 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block head %}
+  <title>Результаты поиска{% if query %}: {{ query }}{% endif %}</title>
+{% endblock head %}
+
+{% block content %}
+<div class="container">
+  <h1 class="main-title">Результаты поиска</h1>
+  
+  <div class="search-container">
+    <form method="get" action="{% url 'search_articles' %}" class="search-form">
+      <div class="search-group">
+        {{ form.query }}
+        <button type="submit" class="search-btn">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <div class="filter-group">
+        {{ form.topic }}
+      </div>
+    </form>
+  </div>
+
+  {% if query %}
+    <div class="search-summary">
+      <p>Результаты поиска для: <strong>"{{ query }}"</strong></p>
+    </div>
+  {% endif %}
+
+  {% if page_obj %}
+    <div class="articles-grid">
+      {% for article in page_obj %}
+        <div class="article-card">
+          <div class="article-header">
+            <div class="category-badge {{ article.topic.name|slugify }}">{{ article.topic.name }}</div>
+            {% if article.image %}
+              <div class="article-image" style="background-image: url('{{ article.image }}')"></div>
+            {% else %}
+              <div class="article-image default-image"></div>
+            {% endif %}
+          </div>
+          <div class="article-body">
+            <h3 class="article-title">
+              <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+            </h3>
+            <p class="article-summary">{{ article.summary|truncatewords:20 }}</p>
+            <div class="article-meta">
+              <span class="article-author">
+                <i class="fas fa-user"></i> {{ article.author.username }}
+              </span>
+              <span class="article-date">
+                <i class="far fa-calendar-alt"></i> {{ article.data|date:"d.m.Y" }}
+              </span>
+              <span class="article-views">
+                <i class="far fa-eye"></i> {{ article.views }}
+              </span>
+              <span class="article-likes">
+                <i class="far fa-heart"></i> {{ article.likes.count }}
+              </span>
+              <span class="article-comments">
+                <i class="far fa-comment"></i> {{ article.comments.count }}
+              </span>
+            </div>
+          </div>
+          <div class="article-footer">
+            <a href="{% url 'article_detail' article.id %}" class="read-more">Читать далее</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Пагинация -->
+    <div class="pagination">
+      <span class="step-links">
+        {% if page_obj.has_previous %}
+          <a href="?page=1{% if query %}&query={{ query }}{% endif %}{% if form.topic.value %}&topic={{ form.topic.value }}{% endif %}">&laquo; Первая</a>
+          <a href="?page={{ page_obj.previous_page_number }}{% if query %}&query={{ query }}{% endif %}{% if form.topic.value %}&topic={{ form.topic.value }}{% endif %}">Предыдущая</a>
+        {% endif %}
+        
+        <span class="current">
+          Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+        </span>
+        
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if query %}&query={{ query }}{% endif %}{% if form.topic.value %}&topic={{ form.topic.value }}{% endif %}">Следующая</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&query={{ query }}{% endif %}{% if form.topic.value %}&topic={{ form.topic.value }}{% endif %}">Последняя &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  {% else %}
+    <div class="no-results">
+      <p>По вашему запросу ничего не найдено.</p>
+      <p>Попробуйте изменить параметры поиска или <a href="{% url 'add_article' %}">создайте новую статью</a>.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %} 

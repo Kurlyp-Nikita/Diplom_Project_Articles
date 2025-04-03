@@ -1,0 +1,109 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'articles_lists.css' %}">
+{% endblock extra_css %}
+
+{% block title %}Все статьи{% endblock %}
+
+{% block content %}
+<div class="articles-container">
+  <h1 class="articles-title">Статьи</h1>
+  
+  <div class="article-search-container">
+    <form method="get" action="{% url 'articles_list' %}" class="search-form">
+      <input type="text" name="query" placeholder="Поиск статей..." class="search-input" value="{{ request.GET.query|default:'' }}">
+      <select name="topic" class="topic-select">
+        <option value="">Все категории</option>
+        <option value="Наука" {% if request.GET.topic == 'Наука' %}selected{% endif %}>Наука</option>
+        <option value="Спорт" {% if request.GET.topic == 'Спорт' %}selected{% endif %}>Спорт</option>
+        <option value="Искусство" {% if request.GET.topic == 'Искусство' %}selected{% endif %}>Искусство</option>
+      </select>
+      <button type="submit" class="search-button">
+        <i class="fas fa-search"></i> Найти
+      </button>
+    </form>
+  </div>
+
+  {% if articles %}
+  <div class="articles-grid">
+    {% for article in articles %}
+      <div class="article-card">
+        <div class="article-image {% if not article.image %}default-image{% endif %}" {% if article.image %}style="background-image: url('{{ article.image }}')"{% endif %}>
+          <div class="category-badge {{ article.topic.name }}">{{ article.topic.name }}</div>
+        </div>
+        <div class="article-content">
+          <h3 class="article-title">
+            <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+          </h3>
+          <p class="article-summary">{{ article.summary|truncatewords:20 }}</p>
+          <div class="article-meta">
+            <span class="article-author">
+              <i class="fas fa-user"></i> {{ article.author.username }}
+            </span>
+            <span class="article-date">
+              <i class="far fa-calendar-alt"></i> {{ article.data|date:"d.m.Y" }}
+            </span>
+            <span class="article-views">
+              <i class="far fa-eye"></i> {{ article.views }}
+            </span>
+            <span class="article-likes">
+              <i class="far fa-heart"></i> {{ article.likes.count }}
+            </span>
+            <span class="article-comments">
+              <i class="far fa-comment"></i> {{ article.comments.count }}
+            </span>
+          </div>
+          <a href="{% url 'article_detail' article.id %}" class="read-more-btn">
+            <i class="fas fa-book-reader"></i> Читать статью
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Пагинация -->
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page=1{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.topic %}&topic={{ request.GET.topic }}{% endif %}">
+        <i class="fas fa-angle-double-left"></i>
+      </a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.topic %}&topic={{ request.GET.topic }}{% endif %}">
+        <i class="fas fa-angle-left"></i>
+      </a>
+    {% endif %}
+    
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <span class="current">{{ num }}</span>
+      {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+        <a href="?page={{ num }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.topic %}&topic={{ request.GET.topic }}{% endif %}">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.topic %}&topic={{ request.GET.topic }}{% endif %}">
+        <i class="fas fa-angle-right"></i>
+      </a>
+      <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.topic %}&topic={{ request.GET.topic }}{% endif %}">
+        <i class="fas fa-angle-double-right"></i>
+      </a>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="no-articles">
+    <p>Статьи не найдены. 
+    {% if request.GET.query or request.GET.topic %}
+      Попробуйте изменить параметры поиска.
+    {% else %}
+      Будьте первым, кто создаст статью!
+    {% endif %}
+    </p>
+    <a href="{% url 'add_article' %}" class="create-article-btn">
+      <i class="fas fa-plus-circle"></i> Создать статью
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %} 

@@ -1,0 +1,63 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block head %}
+  <title>Добавление статьи</title>
+  <link rel="stylesheet" href="{% static 'forms.css' %}">
+  <link rel="stylesheet" href="{% static 'add_art_1.css' %}">
+{% endblock head %}
+
+{% block content %}
+<div class="form-container">
+  <h1 class="form-title">Добавление новой статьи</h1>
+  
+  {% if user.is_authenticated %}
+    <form method="post" class="article-form">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="{{ form.topic.id_for_label }}">Категория:</label>
+        {{ form.topic }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.title.id_for_label }}">Заголовок:</label>
+        {{ form.title }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.summary.id_for_label }}">Краткое описание:</label>
+        {{ form.summary }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.text.id_for_label }}">Текст статьи:</label>
+        {{ form.text }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.info.id_for_label }}">Источник (URL):</label>
+        {{ form.info }}
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.image.id_for_label }}">Изображение (URL):</label>
+        {{ form.image }}
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-paper-plane"></i> Опубликовать
+        </button>
+        <a href="{% url 'articles_list' %}" class="cancel-btn">
+          <i class="fas fa-times"></i> Отмена
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="auth-required">
+      <p>Для добавления статьи необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'reg' %}">зарегистрироваться</a>.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %} 

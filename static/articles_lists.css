@@ -1,0 +1,546 @@
+:root {
+    --primary-color: #2196f3;
+    --secondary-color: #1976d2;
+    --accent-color: #ff9800;
+    --bg-color: #f5f5f5;
+    --text-color: #333;
+    --light-text: #757575;
+    --card-bg: #fff;
+    --border-radius: 8px;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --science-color: rgba(33, 150, 243, 0.8);
+    --sport-color: rgba(76, 175, 80, 0.8);
+    --art-color: rgba(156, 39, 176, 0.8);
+}
+
+
+body {
+    background-color: var(--bg-color);
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.main-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    font-weight: 800;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.main-title:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #3498db, #2ecc71);
+    border-radius: 2px;
+}
+
+/* Search */
+.search-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.search-form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-form input[type="text"] {
+    flex: 1;
+    min-width: 250px;
+    border: 2px solid #e0e0e0;
+    border-radius: 30px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-form input[type="text"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    outline: none;
+}
+
+.search-form select {
+    min-width: 200px;
+    border: 2px solid #e0e0e0;
+    border-radius: 30px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232c3e50'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5rem;
+}
+
+.search-form select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    outline: none;
+}
+
+.search-form button {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-form button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
+}
+
+.search-form button i {
+    font-size: 1.1rem;
+}
+
+.search-summary {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+}
+
+/* Articles Grid */
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.article-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+.article-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.article-header {
+    position: relative;
+}
+
+.article-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.default-image {
+    background: linear-gradient(135deg, #3498db, #1abc9c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.default-image::after {
+    content: '\f304';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.category-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: #e74c3c;
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.category-badge.Наука {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.category-badge.Спорт {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.category-badge.Искусство {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.article-body {
+    padding: 20px;
+    flex: 1;
+}
+
+.article-title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.article-title a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.article-title a:hover {
+    color: #3498db;
+}
+
+.article-summary {
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.article-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+    color: #95a5a6;
+    font-size: 0.85rem;
+}
+
+.article-meta > span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.article-meta i {
+    color: #3498db;
+}
+
+.article-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.read-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.read-more-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+    gap: 0.5rem;
+}
+
+.pagination a,
+.pagination span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    color: #2c3e50;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.pagination a:hover {
+    background-color: #3498db;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.pagination .current {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+/* No Articles */
+.no-articles {
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin: 3rem 0;
+    font-size: 1.2rem;
+    color: #7f8c8d;
+}
+
+.create-article-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    transition: all 0.3s ease;
+    gap: 0.5rem;
+    margin: 2rem auto;
+    width: max-content;
+}
+
+.create-article-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+.create-article-btn i {
+    font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .articles-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .article-image {
+        height: 160px;
+    }
+    
+    .article-title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-form {
+        flex-direction: column;
+    }
+    
+    .search-form input,
+    .search-form select,
+    .search-form button {
+        width: 100%;
+    }
+}
+
+/* Добавляем стили для иконок категорий в заголовке */
+.category-icon {
+  font-size: 2rem;
+  margin-right: 1rem;
+  vertical-align: middle;
+}
+
+.category-icon.science {
+  color: var(--science-color);
+}
+
+.category-icon.sport {
+  color: var(--sport-color);
+}
+
+.category-icon.art {
+  color: var(--art-color);
+}
+
+/* Улучшаем стиль для заголовка страницы с категориями */
+.articles-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.back-to-categories {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.back-to-categories .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.back-to-categories .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+}
+
+/* Улучшенные стили для категорий статей */
+.category-badge.наука,
+.category-badge.science {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.category-badge.спорт,
+.category-badge.sport {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.category-badge.искусство,
+.category-badge.art {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+/* Анимация для карточек статей */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.article-card.animate-on-scroll {
+  opacity: 0;
+}
+
+.article-card.animate-on-scroll.animated {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Улучшенный вид при отсутствии статей */
+.no-articles {
+  background-color: white;
+  border-radius: 15px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  grid-column: 1 / -1;
+  margin: 2rem 0;
+}
+
+.no-articles i {
+  font-size: 3rem;
+  color: #95a5a6;
+  margin-bottom: 1rem;
+}
+
+.no-articles p {
+  font-size: 1.25rem;
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+}
+
+.no-articles .btn-add-article {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+.no-articles .btn-add-article:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* Улучшенные стили для форм поиска */
+.search-form {
+  position: relative;
+}
+
+.search-input {
+  padding-left: 3rem;
+}
+
+.search-form::before {
+  content: '\f002';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #95a5a6;
+  z-index: 1;
+}
+
+.search-button {
+  background: linear-gradient(135deg, #3498db, #2ecc71);
+}
+
+.search-button:hover {
+  background: linear-gradient(135deg, #2980b9, #27ae60);
+}
